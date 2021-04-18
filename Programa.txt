@@ -3,7 +3,7 @@
 #define fEtapa2 5
 #define clear 7
 
-
+//VERIFICACION DE LOS LEDS
 void setup()
 {
   int pines[4]={4,6,5,7};
