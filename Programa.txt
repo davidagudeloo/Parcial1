@@ -1,37 +1,171 @@
-#define filaSerial 4
-#define fEtapa1 6
-#define fEtapa2 5
+//FUNCIONES
+//activaciones por flanco de subida
+void pulsoColumna();
+void coutpulsoColumna();
+void pulsoFila();
+void coutpulsoFila();
+
+//verificacion de todos los leds
+void verificacion();
+
+//librería abecedario
+void A();
+//otras
+void apagarMatriz();
+void encenderMatriz();
+void led(int, int);
+
+
+//DEFINO LOS PINES DE ENTRADA
+//columnas:
+//input que controlará las columnas
+#define columnaSerial 4
+//registro de almacenamiento de las columnas
+#define columnaEtapa1 6
+//registro de salida de las columnas
+#define columnaEtapa2 5
+
+//filas:
+//input que controlará las filas
+#define filaSerial 8
+//registro de almacenamiento de las filas
+#define filaEtapa1 10
+//registro de salida de las filas
+#define filaEtapa2 9
+
+//limpiar pantalla
 #define clear 7
 
 
 void setup()
 {
-  int pines[4]={4,6,5,7};
-  for(int i=0;i<4;i++)
+  //inicializo el puerto serial
+  Serial.begin(9600);
+  //comienza en alto el shift register clear
+  digitalWrite(clear, HIGH);
+  //inicializo los pines digitales como salidas y en bajo
+  int pines[6]={4,6,5,8,10,9};
+  for(int i=0;i<6;i++)
   {
 	pinMode(pines[i], OUTPUT);
-    digitalWrite(pines[i], LOW);
+	digitalWrite(pines[i], LOW);
+
   }
-  digitalWrite(clear, HIGH);
-  digitalWrite(filaSerial, HIGH);
-  digitalWrite(fEtapa1, LOW);
-  digitalWrite(fEtapa1, HIGH);
-  digitalWrite(fEtapa1, LOW);
-  digitalWrite(fEtapa2, LOW);
-  digitalWrite(fEtapa2, HIGH);
-  digitalWrite(fEtapa2, LOW);
+  apagarMatriz();
+  /*delay(1000);
+  encenderMatriz();
+  delay(1000);
+  apagarMatriz();
+  delay(1000);*/
+  verificacion();
+  delay(1000);
 
   
-}
 
+ 
+}
+//----------------------------------------------------------------
 void loop()
 {
-  digitalWrite(filaSerial, LOW);
-  digitalWrite(fEtapa1, LOW);
-  digitalWrite(fEtapa1, HIGH);
-  digitalWrite(fEtapa1, LOW);
-  digitalWrite(fEtapa2, LOW);
-  digitalWrite(fEtapa2, HIGH);
-  digitalWrite(fEtapa2, LOW);
-  delay(1000);
+
+  
+ 
+
+
+
+  
+
+
+}
+//----------------------------------------------------------------
+void led(int f, int c)
+{
+  digitalWrite(columnaSerial, 1);
+
+  digitalWrite(filaSerial, 0);
+  
+  
+  for(int i=1;i<=c;i++)
+  {
+    pulsoColumna();
+    digitalWrite(columnaSerial, 0);
+  }
+  for(int j=1;j<=f;j++)
+  {
+    pulsoFila();
+    digitalWrite(filaSerial, 1);
+  }
+  coutpulsoColumna();
+  coutpulsoFila();
+  apagarMatriz();
+}
+
+
+void apagarMatriz()
+{
+  for(int i=1;i<=8;i++)
+  {
+	digitalWrite(columnaSerial, 0);
+    digitalWrite(filaSerial, 1);
+    pulsoColumna();
+    pulsoFila();
+  }
+  coutpulsoColumna();
+  coutpulsoFila();
+}
+
+void encenderMatriz()
+{
+  for(int i=1;i<=8;i++)
+  {
+	digitalWrite(columnaSerial, 1);
+    digitalWrite(filaSerial, 0);
+    pulsoColumna();
+    pulsoFila();
+  }
+  coutpulsoColumna();
+  coutpulsoFila();
+}
+
+
+void verificacion()
+{
+  apagarMatriz();
+  encenderMatriz();
+  delay(4000);
+  apagarMatriz();
+}
+  
+
+
+//activaciones por flanco de subida
+void pulsoColumna()
+{
+  digitalWrite(columnaEtapa1, LOW);
+  digitalWrite(columnaEtapa1, HIGH);
+  digitalWrite(columnaEtapa1, LOW);
+}
+void coutpulsoColumna()
+{
+  digitalWrite(columnaEtapa2, LOW);
+  digitalWrite(columnaEtapa2, HIGH);
+  digitalWrite(columnaEtapa2, LOW);
+}
+
+void pulsoFila()
+{
+  digitalWrite(filaEtapa1, LOW);
+  digitalWrite(filaEtapa1, HIGH);
+  digitalWrite(filaEtapa1, LOW);
+}
+void coutpulsoFila()
+{
+  digitalWrite(filaEtapa2, LOW);
+  digitalWrite(filaEtapa2, HIGH);
+  digitalWrite(filaEtapa2, LOW);
+}
+
+//librería abecedario
+void A()
+{
 }
