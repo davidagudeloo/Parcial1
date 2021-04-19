@@ -1,4 +1,4 @@
-//FUNCIONES
+﻿//FUNCIONES
 //activaciones por flanco de subida
 void pulsoColumna();
 void coutpulsoColumna();
@@ -14,6 +14,7 @@ void A();
 void apagarMatriz();
 void encenderMatriz();
 void led(int, int);
+void fila (long, int, int);
 
 
 //DEFINO LOS PINES DE ENTRADA
@@ -41,6 +42,7 @@ void setup()
 {
   //inicializo el puerto serial
   Serial.begin(9600);
+  Serial.setTimeout(50);
   //comienza en alto el shift register clear
   digitalWrite(clear, HIGH);
   //inicializo los pines digitales como salidas y en bajo
@@ -57,11 +59,13 @@ void setup()
   delay(1000);
   apagarMatriz();
   delay(1000);*/
-  verificacion();
-  delay(1000);
+  //verificacion();
+  //delay(2000);
 
   
-
+  //led(8,1,10);
+   fila (11101111,4,5);
+   
  
 }
 //----------------------------------------------------------------
@@ -78,8 +82,53 @@ void loop()
 
 }
 //----------------------------------------------------------------
-void led(int f, int c)
+void fila (long numero, int fila, int t)
 {
+   
+   //int mod=0;
+   /*Serial.println("Ingrese una combinacion de 8 caracteres.");
+   String cad=Serial.readStringUntil('\n');
+   //Serial.println("Ingrese el tiempo de visualizacion");
+   //String strtime=Serial.readStringUntil('\n');*/
+   int time= t*1000;
+   //numero=cad.toInt();
+   int combinacion[8];
+   for(int i=0;i<8;i++){
+       //mod=numero%10;
+       
+       combinacion[i]=numero%10;
+       numero/=10;
+       
+   }
+  
+  
+  digitalWrite(filaSerial, 0);
+  
+  for(int i=8;i>0;i--)
+  {
+    
+    digitalWrite(columnaSerial, combinacion[i-1]);
+    pulsoColumna();
+    
+    
+  }
+  for(int j=1;j<=fila;j++)
+  {
+    pulsoFila();
+    digitalWrite(filaSerial, 1);
+    
+  }
+  coutpulsoColumna();
+  coutpulsoFila();
+  delay(time);
+  apagarMatriz();
+
+  
+}  
+
+void led(int f, int c, int t)
+{
+  int time= t*1000;
   digitalWrite(columnaSerial, 1);
 
   digitalWrite(filaSerial, 0);
@@ -97,6 +146,7 @@ void led(int f, int c)
   }
   coutpulsoColumna();
   coutpulsoFila();
+  delay(time);
   apagarMatriz();
 }
 
