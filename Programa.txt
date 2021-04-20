@@ -45,6 +45,7 @@ void A();
 
 void setup()
 {
+  int opcion=0;
   //inicializo el puerto serial
   Serial.begin(9600);
   //comienza en alto el shift register clear
@@ -58,8 +59,43 @@ void setup()
   }
   //funcion verificacion
   
-  verificacion();
+  //verificacion();
   
+  Serial.println("Bienvenido\nelija la funcion que desea ejecutar: \n");
+  Serial.println("Ingrese 1 comprobar que todos los leds de la matriz de 8x8 estan funcionando correctamente\n");
+  //Serial.println("Ingrese 2 para encender un led en especifico\n");
+  Serial.println("Ingrese 2 para imprimir en la matriz un patron personalizado\n");
+  Serial.println("0 para terminar.\n");
+  Serial.println("\n");
+  opcion=Serial.parseInt();
+  Serial.print(opcion);
+  while(opcion>0){
+         switch(opcion){
+        
+         case 1:
+         {
+            verificacion();
+         }
+         break;
+         case 2:
+         {
+            imagen();
+         }
+         break;  
+        default:
+           Serial.println("La opcion seleccionada no es valida");
+           break;  
+        }
+    
+    Serial.println("\n");
+    Serial.println("Elija la funcion que desea ejecutar:\n");
+    Serial.println("Ingrese 1 comprobar que todos los leds de la matriz de 8x8 estan funcionando correctamente\n");
+    //Serial.println("Ingrese 2 para encender un led en especifico\n");
+    Serial.println("Ingrese 2 para imprimir en la matriz un patron personalizado\n");
+    Serial.println("0 para terminar.\n");
+    Serial.println("\n");
+    opcion=Serial.parseInt();
+  }
 
  
 }
@@ -70,7 +106,6 @@ void loop()
 
   
  
-imagen();
 
 
   
