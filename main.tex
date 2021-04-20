@@ -10,26 +10,26 @@
 
 \begin{titlepage}
     \begin{center}
-        \vspace*{1cm}
+        \vspace*{0cm}
             
         \Huge
-        \textbf{Desafío \# 1}
+        \textbf{Parcial 1}
             
         \vspace{0.5cm}
         \LARGE
         Informa2 S.A.S.
             
-        \vspace{1.5cm}
+        \vspace{5cm}
             
         \textbf{David Agudelo Ochoa}
         
         \vspace{0.5cm}
         
-        \textbf{Erika Dayana León Quiroga}
+        \textbf{Juan Pablo Cruz Gómez}
         
         \vspace{0.5cm}
         
-        \textbf{Juan Pablo Cruz Gómez}
+        \textbf{Erika Dayana León Quiroga}
             
         \vfill
             
@@ -47,12 +47,13 @@
 \tableofcontents
 \newpage
 \section{Sección introductoria}\label{intro}
-Bla.
+Este informe se hace con la intención de mostrar la solución de un problema cotidiano mediante el uso de  estructuras de programación, tipos de datos, funciones, arreglos y apuntadores usados en el lenguaje C++, además de introducir los conocimientos adquiridos sobre el Arduino, y lograr trabajar con estas dos herramientas para mostrar la propuesta implementada en el software de simulación de circuitos Tinkercad.
 
 \section{Análisis del problema y consideraciones} \label{contenido}
-Esta sección es para agregar toda la información correspondiente con código, citas, etc.
+En este problema, haciendo uso de tinkercad, se pide realizar la simulación de un circuito que controle un sistema compuesto por 64 LEDs (8 filas por 8 columnas) con ayuda de un arduino y la cantidad de circuitos integrados de registro de desplazamiento 74HC595 necesarios para su óptimo funcionamiento. El sistema compuesto por LEDs le mostrará al usuario el patrón de un caracter que él desee observar, el usuario podrá escribir palabras y el sistema se encargará de mostrar letra por letra, éstas separadas por un delay que el usuario escogerá a su gusto.
 \subsection{Consideraciones iniciales}
-Tenemos una límite de 7 pines digitales del arduino, por lo que lo ideal será usar 2 integrados, implementando 3 pines para cada uno, permitiendonos manipular 8 pines con cada uno, es decir nuestra matriz completa de 64 leds. Dejando un pin libre, el cual se está en consideración si se dejará por fuera de uso o se usará para limpiar la matriz, haciendo uso de pin shift register clear del arduino. 
+Se debe tener en cuenta, según las restricciones, que se podrán usar máximo siete pines digitales del Arduino, se usarán dos circuitos integrados, cada uno de estos necesita tres pines digitales, uno de ellos controla las ocho filas y el otro las ocho columnas en el sistema compuesto por 64 LEDs. El pin sobrante, llamado Shift Register Clear, podrá ser utilizado como reset de la matriz de LEDs.
+
 También es posible citar libros \cite{dirac} o documentos en línea \cite{knuthwebsite}.\\\\
 Revisar en la última sección el formato de las referencias en IEEE.
 
@@ -98,19 +99,34 @@ El valor de i es -> 8
 En la sección \ref{imagenes}, se presentará como añadir ilustraciones al texto.
 
 \section{Tareas para el desarrollo del problema} \label{imagenes}
+\begin{enumerate}
+  \item Desarrollar una función para encender un led en una posición determinada, de esta forma se dará el primer paso para la creación de patrones complejos.
+  \item Hacer una biblioteca de caracteres (Una función para cada caracter).
+  \item Enlazar la biblioteca con el monitor serial mediante la función imagen, o sea, la entrada del usuario.
+  \item Hacer el manual de usuario. Se incluirá la biblioteca de letras, números, caracteres comunes y caracteres especiales.
+  \item Crear una función llamada Publik que le permite al usuario observar la secuencia de patrones con un delay asignado por el mismo usuario.
+\end{enumerate}
+
+
 \section{Algoritmo implementado} \label{imagenes}
 \section{Problemas durante el desarrollo del desafío} \label{imagenes}
 \section{Evolución del algoritmo} \label{imagenes}
+sábado 17: inicialmente se implementó el montaje realizado por el profeso jonathan, posterior a ello se estudió cómo está conformada una matriz de leds, lo que llevó a estudiar terminos tales como la multiplexación y la persistencia. Conociendo esto, se procedió a montar la matriz de leds junto con los dos integrados y el arduino, haciendo uso inicialmente de 7 pines dígitales de este modo: se ponen los modos*. figura1*.
+Las resistencias al aire muestran las pruebas que se hicieron al conectar al circuito. \newline Domingo 18: se decidió que antes de empezar a programar, era importante entender cómo prender un led, por lo que se desarrollaría una función para encender un led, y aplicando el concepto de la persistencia del ojo humano, se conseguiría el cometido. Sin embargo, una vez se llegó a esta solución, se descubrió que presentaba discrepancias al querer encender varios leds en una misma fila. \newline
+Lunes19: en horas de la mañana se desarrollá una función la cual permite encender filas de led, sin embargo, esta no tenía implementada una recepción por consola, y presentaba dificultades si el número ingresado desde el algoritmo empezaba con ceros.
+ En horas de la tarde se construye primeramente una función para que el usuario ingrese por consola un numero de 8 digitos (compuesto únicamente de 1 y 0), y se almacene en un arreglo de tipo entero. Luego se usa la función obtenida para  llenar otro arreglo que contenga 8 arreglos en su interior, es decir, una matriz de 8x8, que además se le mostrará al usuario.
+ Finalmente, en altas horas de la noche se lográ construir una función cuyo una de sus entradas será la matriz obtenida, permitiendonos así iluminar la matriz de leds de acuerdo a los 1 y 0 contenidos en nuestra matriz.
+ Además se descubré que no hay necesidad de usar un pin individual para cada output register clock, pues estos se usan al mismo tiempo cada que se requiere su uso. Dejando como resultado, el pin 9 libre. montaje2*
 
 \section{Inclusión de imágenes} \label{imagenes}
 
-En la Figura (\ref{fig:cpplogo}), se presenta el logo de C++ contenido en la carpeta images.
+En la Figura (\ref{fig:montaje1}), se presenta el primer montaje del circuito. 
 
 \begin{figure}[h]
-\includegraphics[width=4cm]{cpplogo.png}
+\includegraphics[width=16cm]{montaje1.png}
 \centering
-\caption{Logo de C++}
-\label{fig:cpplogo}
+\caption{Primer montaje del circuito en Tinkercad}
+\label{fig:montaje1}
 \end{figure}
 
 Las secciones (\ref{intro}), (\ref{contenido}) y (\ref{imagenes}) dependen del estilo del documento.

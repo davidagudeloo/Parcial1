@@ -1,19 +1,24 @@
-//FUNCIONES
+﻿//FUNCIONES
 //activaciones por flanco de subida
-void pulsoColumna();
-void coutpulsoColumna();
-void pulsoFila();
-void coutpulsoFila();
+void pulsoColumna(); //flanco al shift register clock del integrado derecho
+void pulsoFila();    //flanco al shift register clock del integrado izquierdo
+void coutpulso();    //flanco al output register clock de ambos integrados
 
 //verificacion de todos los leds
 void verificacion();
-
-//librería abecedario
-void A();
 //otras
 void apagarMatriz();
 void encenderMatriz();
-void led(int, int);
+
+//mostrar imagen en la matriz
+void imagen();
+//otras
+void digitosfila(long int, int numeros[]);//ingresa cada digito de un numero int a un array
+void led(int, int numerosfilas[][8]);
+
+//librería abecedario
+void A();
+
 
 
 //DEFINO LOS PINES DE ENTRADA
@@ -22,20 +27,21 @@ void led(int, int);
 #define columnaSerial 4
 //registro de almacenamiento de las columnas
 #define columnaEtapa1 6
-//registro de salida de las columnas
-#define columnaEtapa2 5
 
 //filas:
 //input que controlará las filas
 #define filaSerial 8
 //registro de almacenamiento de las filas
 #define filaEtapa1 10
-//registro de salida de las filas
-#define filaEtapa2 9
+
+//registro de salida de ambos integrados:
+#define Etapa2 5
+
 
 //limpiar pantalla
 #define clear 7
 
+//----------------------------------------------------------------
 
 void setup()
 {
@@ -49,28 +55,22 @@ void setup()
   {
 	pinMode(pines[i], OUTPUT);
 	digitalWrite(pines[i], LOW);
-
   }
-  apagarMatriz();
-  /*delay(1000);
-  encenderMatriz();
-  delay(1000);
-  apagarMatriz();
-  delay(1000);*/
+  //funcion verificacion
+  
   verificacion();
-  delay(1000);
-
   
 
  
 }
 //----------------------------------------------------------------
+
 void loop()
 {
 
   
  
-
+imagen();
 
 
   
@@ -78,28 +78,94 @@ void loop()
 
 }
 //----------------------------------------------------------------
-void led(int f, int c)
+void digitosfila(long int num, int numeros[])
 {
-  digitalWrite(columnaSerial, 1);
-
-  digitalWrite(filaSerial, 0);
+  //Serial.println("ingrese 8 numeros: ");
   
-  
-  for(int i=1;i<=c;i++)
+  while(1)
   {
-    pulsoColumna();
-    digitalWrite(columnaSerial, 0);
+    if(Serial.available())
+    {
+      do{
+      //long int num;
+      num=Serial.parseInt();
+      }while(num>11111111);
+      //int numeros[8];
+      for(int i=7;i>=0;i--)
+      {
+        numeros[i]=(num%10);
+        num=(num/10);
+      }
+      
+      break;
+  	}
   }
-  for(int j=1;j<=f;j++)
+}
+
+void imagen()
+{
+  Serial.println("ingrese 8 numeros: ");
+  //matriz donde almacenaré el patron
+  int numerosfilas[8][8];
+  
+  //se ingresan los 8 bits de cada fila
+  for(int i=0;i<8;i++)
+  {
+  	long int num;
+  	int numeros[8];
+  	digitosfila(num, numeros);
+    for(int j=0;j<8;j++)
+    {
+      numerosfilas[i][j]=numeros[j];
+      Serial.print(numerosfilas[i][j]);
+      Serial.print(" ");
+    }
+    Serial.println();
+  }
+  Serial.println();
+
+  
+  //prender los leds
+  while(1)
+  {
+  	for(int i=7;i>=0;i--)
+  	{
+    	led(i, numerosfilas);
+  	}
+  }
+  
+}
+
+//-----------------------------------------------------------
+
+void led(int f, int numerosfilas[][8])
+{
+  /*for(int i=0;i<8;i++)
+  {
+    for(int j=0;j<8;j++)
+    {
+      Serial.print(numerosfilas[i][j]);
+    }
+    Serial.println();
+  }*/
+
+  for(int i=0;i<=7;i++)
+  {
+    digitalWrite(columnaSerial,numerosfilas[f][i]);
+    pulsoColumna();
+  }
+  digitalWrite(filaSerial, 0);
+  for(int j=7;j>=f;j--)
   {
     pulsoFila();
     digitalWrite(filaSerial, 1);
   }
-  coutpulsoColumna();
-  coutpulsoFila();
+  coutpulso();
+  delay(1);
   apagarMatriz();
 }
 
+//-----------------------------------------------------------
 
 void apagarMatriz()
 {
@@ -110,8 +176,7 @@ void apagarMatriz()
     pulsoColumna();
     pulsoFila();
   }
-  coutpulsoColumna();
-  coutpulsoFila();
+  coutpulso();
 }
 
 void encenderMatriz()
@@ -123,20 +188,21 @@ void encenderMatriz()
     pulsoColumna();
     pulsoFila();
   }
-  coutpulsoColumna();
-  coutpulsoFila();
+  coutpulso();
 }
 
 
 void verificacion()
 {
   apagarMatriz();
+  delay(100);
   encenderMatriz();
-  delay(4000);
+  delay(100);
   apagarMatriz();
+  delay(100);
 }
   
-
+//-----------------------------------------------------------
 
 //activaciones por flanco de subida
 void pulsoColumna()
@@ -145,12 +211,6 @@ void pulsoColumna()
   digitalWrite(columnaEtapa1, HIGH);
   digitalWrite(columnaEtapa1, LOW);
 }
-void coutpulsoColumna()
-{
-  digitalWrite(columnaEtapa2, LOW);
-  digitalWrite(columnaEtapa2, HIGH);
-  digitalWrite(columnaEtapa2, LOW);
-}
 
 void pulsoFila()
 {
@@ -158,12 +218,17 @@ void pulsoFila()
   digitalWrite(filaEtapa1, HIGH);
   digitalWrite(filaEtapa1, LOW);
 }
-void coutpulsoFila()
+
+//pulso al output de ambos integrados
+void coutpulso()
 {
-  digitalWrite(filaEtapa2, LOW);
-  digitalWrite(filaEtapa2, HIGH);
-  digitalWrite(filaEtapa2, LOW);
+  digitalWrite(Etapa2, LOW);
+  digitalWrite(Etapa2, HIGH);
+  digitalWrite(Etapa2, LOW);
+
 }
+
+//-----------------------------------------------------------
 
 //librería abecedario
 void A()
