@@ -13,8 +13,8 @@ void flancoMatriz(int);//recibe el tiempo que se mostrará la verificacion
 	void encenderMatriz();
 
 //MOSTRAR IMAGEN EN LA MATRIZ
-void IMAGEN();
-void imagen(unsigned long);
+void imagen();
+void imagenImpresion(unsigned long);
 void publik();
 //otras
 void digitosfila(long int, int numeros[]);//cada digito de un long int lo ingresa a un array
@@ -104,7 +104,7 @@ void loop()
   else if(opcion==2)
   {
     Serial.println("IMAGEN.");
-    IMAGEN();
+    imagen();
     opcion=0;
     delay(1000);
   }
@@ -130,7 +130,7 @@ void loop()
 }
 //----------------------------------------------------------------
 //FUNCIONES:
-void IMAGEN()
+void imagen()
 {
   Serial.println("Ingrese los segundos que desea ver la matriz encendida: ");
   while(1)
@@ -139,7 +139,9 @@ void IMAGEN()
     {
       unsigned long tiempo;
       tiempo=Serial.parseInt();
-      imagen(tiempo);
+      Serial.println(tiempo);
+      delay(1000);
+      imagenImpresion(tiempo);
       break;
     }
   }
@@ -147,58 +149,7 @@ void IMAGEN()
   
 //----------------------------------------------------------------
 
-void publik()
-{
-   int cant_pat=0, tiempo=0;
-   // ingresar cantidad de patrones
-   Serial.println("cantidad de patrones\n");
-   cant_pat=Serial.parseInt();
-
-  
-  //matriz donde almacenaré el patron
-  int numerosfilas[cant_pat][8][8];
-
-  
-  for(int K=0;K<cant_pat;K++){// se ingresa matriz 8x8 para cada patron
-
-      Serial.print("ingrese el patron numero ");
-      Serial.print(K+1);
-      Serial.println(" de 8x8 : \n");
-      for(int i=0;i<8;i++)//se ingresan los 8 bits de cada fila
-      {
-          long int num;
-          int numeros[8];
-
-          digitosfila(num, numeros);
-          //cout<<endl;
-           for(int j=0;j<8;j++)
-           {
-
-                numerosfilas[K][i][j]=numeros[j]; //ingresar 1 o 0 en la posicion j de la fila i en el patron k
-                Serial.print(numerosfilas[K][i][j]);
-                Serial.print(" "); 
-
-           }
-           /*for(int n=0;n<=i;n++){ //ciclo para imprimir lo que se lleva guardado en la matriz 8x8 del patron actual
-               for(int m=0;m<8;m++){
-               Serial.print(numerosfilas[K][n][m]);
-
-               }
-               Serial.print();
-           }*/
-
-
-           Serial.println();
-      }
-      Serial.println();
-  }
-  Serial.println();
-  Serial.println("Patrones listos");
-  
-}  
-
-
-void imagen(unsigned long tiempo)
+void imagenImpresion(unsigned long tiempo)
 {
   Serial.println("ingrese 8 numeros: ");
   //matriz donde almacenaré el patron
@@ -225,7 +176,7 @@ void imagen(unsigned long tiempo)
 
   
   //prender los leds
-  unsigned long int miliSeg;
+  unsigned long long int miliSeg;
   miliSeg=millis()+tiempo*1000;
   while(miliSeg>=millis())
   {
@@ -291,6 +242,57 @@ void led(int f, int numerosfilas[][8])
 }
 
 //-----------------------------------------------------------
+void publik()
+{
+   int cant_pat=0, tiempo=0;
+   // ingresar cantidad de patrones
+   Serial.println("cantidad de patrones\n");
+   cant_pat=Serial.parseInt();
+
+  
+  //matriz donde almacenaré el patron
+  int numerosfilas[cant_pat][8][8];
+
+  
+  for(int K=0;K<cant_pat;K++){// se ingresa matriz 8x8 para cada patron
+
+      Serial.print("ingrese el patron numero ");
+      Serial.print(K+1);
+      Serial.println(" de 8x8 : \n");
+      for(int i=0;i<8;i++)//se ingresan los 8 bits de cada fila
+      {
+          long int num;
+          int numeros[8];
+
+          digitosfila(num, numeros);
+          //cout<<endl;
+           for(int j=0;j<8;j++)
+           {
+
+                numerosfilas[K][i][j]=numeros[j]; //ingresar 1 o 0 en la posicion j de la fila i en el patron k
+                Serial.print(numerosfilas[K][i][j]);
+                Serial.print(" "); 
+
+           }
+           /*for(int n=0;n<=i;n++){ //ciclo para imprimir lo que se lleva guardado en la matriz 8x8 del patron actual
+               for(int m=0;m<8;m++){
+               Serial.print(numerosfilas[K][n][m]);
+
+               }
+               Serial.print();
+           }*/
+
+
+           Serial.println();
+      }
+      Serial.println();
+  }
+  Serial.println();
+  Serial.println("Patrones listos");
+  
+}  
+
+//-----------------------------------------------------------
 
 void verificacion()
 {
@@ -301,6 +303,8 @@ void verificacion()
     {
       int tiempo;
       tiempo=Serial.parseInt();
+      Serial.println(tiempo);
+      delay(1000);
       flancoMatriz(tiempo);
       break;
     }
