@@ -3,9 +3,13 @@
 \usepackage[spanish]{babel}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{geometry}
 \graphicspath{ {images/} }
 \usepackage{cite}
 
+\geometry{
+textheight=23cm
+}
 \begin{document}
 
 \begin{titlepage}
@@ -46,57 +50,83 @@
 
 \tableofcontents
 \newpage
-\section{Sección introductoria}\label{intro}
+\section{Sección introductoria.}\label{intro}
 Este informe se hace con la intención de mostrar la solución de un problema cotidiano mediante el uso de  estructuras de programación, tipos de datos, funciones, arreglos y apuntadores usados en el lenguaje C++, además de introducir los conocimientos adquiridos sobre el Arduino, y lograr trabajar con estas dos herramientas para mostrar la propuesta implementada en el software de simulación de circuitos Tinkercad.
 
-\section{Análisis del problema y consideraciones} \label{contenido}
+\section{Análisis del problema.} \label{contenido}
 En este problema, haciendo uso de tinkercad, se pide realizar la simulación de un circuito que controle un sistema compuesto por 64 LEDs (8 filas por 8 columnas) con ayuda de un arduino y la cantidad de circuitos integrados de registro de desplazamiento 74HC595 necesarios para su óptimo funcionamiento. El sistema compuesto por LEDs le mostrará al usuario el patrón de un caracter que él desee observar, el usuario podrá escribir palabras y el sistema se encargará de mostrar letra por letra, éstas separadas por un delay que el usuario escogerá a su gusto.
 \subsection{Consideraciones iniciales}
 Se debe tener en cuenta, según las restricciones, que se podrán usar máximo siete pines digitales del Arduino, se usarán dos circuitos integrados, cada uno de estos necesita tres pines digitales, uno de ellos controla las ocho filas y el otro las ocho columnas en el sistema compuesto por 64 LEDs. El pin sobrante, llamado Shift Register Clear, podrá ser utilizado como reset de la matriz de LEDs.
 
 
 \subsection{Incluir código en el documento}
-
 \section{Tareas para el desarrollo del problema} \label{imagenes}
 \begin{enumerate}
-  \item Comprender el funcionamiento del único circuito integrado que se puede utilizar para la solución de este problema, el 74HC595. (\ref{fig:Funcionamiento74HC595})
+  \item Comprender el funcionamiento del único circuito integrado que se puede utilizar para la solución de este problema, el 74HC595. (\ref{fig:Funcionamiento74HC595}),(\ref{fig:setup})
   
  \begin{figure}[h]
-\includegraphics[width=16cm]{FUNCIONAMIENTO74HC595.png}
+\includegraphics[scale=0.4]{FUNCIONAMIENTO74HC595.png}
 \centering
-\caption{Diagrama que intenta mostrar el funcionamiento de un 74HC595.}
+\caption{Diagrama muestra el funcionamiento interno de un 74HC595.}
 \label{fig:Funcionamiento74HC595}
 \end{figure}
+\newpage
 
 \begin{figure}[h]
-\includegraphics[width=16cm]{Funcionamientoarduino.jpeg}
+\includegraphics[width=10cm]{SETUP.jpeg}
 \centering
-\caption{Funcionamiento del 74HC595 en arduino.}
-\label{fig:funcionamientoarduino}
+\caption{Configuración del integrado 74HC595 en Tinkercad, teniendo en cuenta los pines utilizados del arduino.}
+\label{fig:setup}
 \end{figure}
 
-  \item Desarrollar una función para encender un led en una posición determinada, de esta forma se dará el primer paso para la creación de patrones complejos.
-  \item Hacer una biblioteca de caracteres (Una función para cada caracter).
-  \item Enlazar la biblioteca con el monitor serial mediante la función imagen, o sea, la entrada del usuario.
-  \item Hacer el manual de usuario. Se incluirá la biblioteca de letras, números, caracteres comunes y caracteres especiales.
+  \item Realizar el montaje del circuito en la plataforma Tinkercad, recordando que se puede usar únicamente un arduino y un solo tipo de circuito integrado (74HC595).
+
+  \begin{figure}[h]
+  \includegraphics[width=6cm]{montaje1.png}
+  \centering
+  \caption{Primer montaje del circuito en Tinkercad}
+  \label{fig:montaje1}
+  \end{figure}
+  \newpage
+  \item Realizar una función que verifique el funcionamiento de la matriz de LEDs encendiendo a todos ellos por un tiempo determinado.
+  \item Hacer una función que le pida al usuario la matriz de 8x8 conformada por unos y ceros que luego se verá reflejada en los LEDs.
   \item Crear una función llamada Publik que le permite al usuario observar la secuencia de patrones con un delay asignado por el mismo usuario.
+  
+  \begin{figure}[h]
+  \includegraphics[scale=1]{publik.png}
+  \centering
+  \caption{Análisis para el desarrollo de la función publik()}
+  \label{fig:publik}
+  \end{figure}
+  
+  \item Hacer el manual de usuario en donde se tratará de explicar a detalle cómo funciona el sistema.
 \end{enumerate}
 
 
 \section{Algoritmo implementado} \label{imagenes}
-\section{Problemas durante el desarrollo del desafío} \label{imagenes}
+(Hacer el mapa mental)
+\section{Problemas durante el desarrollo del desafío}
+
+\label{imagenes}
 \section{Evolución del algoritmo} \label{imagenes}
-sábado 17: inicialmente se implementó el montaje realizado por el profeso jonathan, posterior a ello se estudió cómo está conformada una matriz de leds, lo que llevó a estudiar terminos tales como la multiplexación y la persistencia. Conociendo esto, se procedió a montar la matriz de leds junto con los dos integrados y el arduino, haciendo uso inicialmente de 7 pines dígitales de este modo: se ponen los modos*. (\ref{fig:montaje1})
-Las resistencias al aire muestran las pruebas que se hicieron al conectar al circuito. 
-\newline Domingo 18: se decidió que antes de empezar a programar, era importante entender cómo prender un led, por lo que se desarrollaría una función para encender un led, y aplicando el concepto de la persistencia del ojo humano, se conseguiría el cometido. Sin embargo, una vez se llegó a esta solución, se descubrió que presentaba discrepancias al querer encender varios leds en una misma fila. 
+sábado 17: inicialmente se implementó el montaje realizado por el profesor jonathan, posterior a ello se estudió cómo está conformada una matriz de leds, lo que llevó a estudiar terminos tales como la multiplexación y la persistencia. Conociendo esto, se procedió a montar la matriz de leds junto con los dos integrados y el arduino, haciendo uso inicialmente de 7 pines dígitales de este modo:
+
+\begin{figure}[h]
+\includegraphics[scale=0.5]{pinesarduino.png}
+\centering
+\caption{Conexión al arduino de dos circuitos integrados 74HC595}
+\label{fig:pinesarduinos}
+\end{figure}
+
+Domingo 18: se decidió que antes de empezar a programar, era importante entender cómo prender un led, por lo que se desarrollaría una función para encender un led, y aplicando el concepto de la persistencia del ojo humano, se conseguiría el cometido. Sin embargo, una vez se llegó a esta solución, se descubrió que presentaba discrepancias al querer encender varios leds en una misma fila. 
 \newline
-Lunes19: en horas de la mañana se desarrollá una función la cual permite encender filas de led, sin embargo, esta no tenía implementada una recepción por consola, y presentaba dificultades si el número ingresado desde el algoritmo empezaba con ceros.
+Lunes19: en horas de la mañana se desarrolla una función la cual permite encender filas de led, sin embargo, esta no tenía implementada una recepción por consola, y presentaba dificultades si el número ingresado desde el algoritmo empezaba con ceros.
  En horas de la tarde se construye primeramente una función para que el usuario ingrese por consola un numero de 8 digitos (compuesto únicamente de 1 y 0), y se almacene en un arreglo de tipo entero. Luego se usa la función obtenida para  llenar otro arreglo que contenga 8 arreglos en su interior, es decir, una matriz de 8x8, que además se le mostrará al usuario.
- Finalmente, en altas horas de la noche se lográ construir una función cuyo una de sus entradas será la matriz obtenida, permitiendonos así iluminar la matriz de leds de acuerdo a los 1 y 0 contenidos en nuestra matriz.
+ Finalmente, se logra construir una función cuyo una de sus entradas será la matriz obtenida, permitiendonos así iluminar la matriz de leds de acuerdo a los 1 y 0 contenidos en nuestra matriz.
  Además se descubré que no hay necesidad de usar un pin individual para cada output register clock, pues estos se usan al mismo tiempo cada que se requiere su uso. Dejando como resultado, el pin 9 libre. (\ref{fig:montaje2})
  
  \begin{figure}[h]
-\includegraphics[width=16cm]{montaje2.png}
+\includegraphics[scale=0.5]{montaje2.png}
 \centering
 \caption{Montaje mejorado del circuito.}
 \label{fig:montaje2}
@@ -106,14 +136,6 @@ Martes 20: se crea un menú, y se modifican las funciones verificacion(), e imag
 \section{Inclusión de imágenes} \label{imagenes}
 
 En la Figura (\ref{fig:montaje1}), se presenta el primer montaje del circuito. 
-
-\begin{figure}[h]
-\includegraphics[width=16cm]{montaje1.png}
-\centering
-\caption{Primer montaje del circuito en Tinkercad}
-\label{fig:montaje1}
-\end{figure}
-
 
 Las secciones (\ref{intro}), (\ref{contenido}) y (\ref{imagenes}) dependen del estilo del documento.
 
