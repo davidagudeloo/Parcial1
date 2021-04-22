@@ -20,9 +20,6 @@ void publik();
 void digitosfila(long int, int numeros[]);//cada digito de un long int lo ingresa a un array
 void led(int, int numerosfilas[][8]);//enciende los leds de una fila de acuerdo a un arreglo
 
-//librería abecedario
-void A();
-
 //----------------------------------------------------------------
 
 //DEFINO LOS PINES DE ENTRADA:
@@ -33,7 +30,6 @@ void A();
 //columnas:
 //registro de almacenamiento de las columnas
 #define columnaEtapa1 6
-
 //filas:
 //registro de almacenamiento de las filas
 #define filaEtapa1 10
@@ -60,6 +56,7 @@ void setup()
   apagarMatriz(); 
   
   //Mensaje de bienvenida
+  Serial.println();
   Serial.print("Bienvenido.\nElija la funcion que desea ejecutar: ");
   delay(500);
 
@@ -117,6 +114,8 @@ void loop()
     opcion=0;
     delay(1000);
   }
+  
+  //DEFAULT
   else
   {
     Serial.println("Entrada invalida.");
@@ -124,11 +123,12 @@ void loop()
     delay(2000);
   }
   
-  
-
-
+  //"limpiar pantalla"
+  Serial.println("\n");
 }
+
 //----------------------------------------------------------------
+
 //FUNCIONES:
 void imagen()
 {
@@ -151,7 +151,7 @@ void imagen()
 
 void imagenImpresion(unsigned long tiempo)
 {
-  Serial.println("ingrese 8 numeros: ");
+  Serial.println("Ingrese el patron de 8x8, linea por linea: ");
   //matriz donde almacenaré el patron
   int numerosfilas[8][8];
   
@@ -176,7 +176,7 @@ void imagenImpresion(unsigned long tiempo)
 
   
   //prender los leds
-  unsigned long long int miliSeg;
+  unsigned long int miliSeg;
   miliSeg=millis()+tiempo*1000;
   while(miliSeg>=millis())
   {
@@ -244,52 +244,82 @@ void led(int f, int numerosfilas[][8])
 //-----------------------------------------------------------
 void publik()
 {
-   int cant_pat=0, tiempo=0;
-   // ingresar cantidad de patrones
-   Serial.println("cantidad de patrones\n");
-   cant_pat=Serial.parseInt();
+  Serial.println("Ingrese la cantidad de patrones que desea mostrar: ");
+  int cant_pat;
+  while(1)
+  {
+    if(Serial.available())
+    {
+      cant_pat=Serial.parseInt();
+      Serial.println(cant_pat);
+      delay(1000);
+      break;
+    }
+  }
 
-  
+
+  //arreglo donde se almacenará el tiempo de cada patrón
+  unsigned long tiempoPatrones[cant_pat];
   //matriz donde almacenaré el patron
   int numerosfilas[cant_pat][8][8];
 
-  
+
   for(int K=0;K<cant_pat;K++){// se ingresa matriz 8x8 para cada patron
-
-      Serial.print("ingrese el patron numero ");
-      Serial.print(K+1);
-      Serial.println(" de 8x8 : \n");
-      for(int i=0;i<8;i++)//se ingresan los 8 bits de cada fila
+	Serial.print("Ingrese el tiempo de visualizacion del patron ");
+    Serial.print(K+1);
+    Serial.println(": ");
+    while(1)
+    {
+      if(Serial.available())
       {
-          long int num;
-          int numeros[8];
+        tiempoPatrones[K]=Serial.parseInt();
+        Serial.println(tiempoPatrones[K]);
+        delay(1000);
+        break;
+      }
+    }
+    Serial.print("Ingrese el patron numero ");
+    Serial.print(K+1);
+    Serial.println(" de 8x8, linea por linea : \n");
+    for(int i=0;i<8;i++)//se ingresan los 8 bits de cada fila
+    {
+      long int num;
+      int numeros[8];
 
-          digitosfila(num, numeros);
-          //cout<<endl;
-           for(int j=0;j<8;j++)
-           {
+      digitosfila(num, numeros);
+      //cout<<endl;
+      for(int j=0;j<8;j++)
+      {
 
-                numerosfilas[K][i][j]=numeros[j]; //ingresar 1 o 0 en la posicion j de la fila i en el patron k
-                Serial.print(numerosfilas[K][i][j]);
-                Serial.print(" "); 
+        numerosfilas[K][i][j]=numeros[j]; //ingresar 1 o 0 en la posicion j de la fila i en el patron k
+        Serial.print(numerosfilas[K][i][j]);
+        Serial.print(" "); 
 
-           }
-           /*for(int n=0;n<=i;n++){ //ciclo para imprimir lo que se lleva guardado en la matriz 8x8 del patron actual
-               for(int m=0;m<8;m++){
-               Serial.print(numerosfilas[K][n][m]);
-
-               }
-               Serial.print();
-           }*/
-
-
-           Serial.println();
       }
       Serial.println();
+    }
+    Serial.println();
   }
   Serial.println();
   Serial.println("Patrones listos");
-  
+  //para cada patrón
+  for(int K=0;K<cant_pat;K++)
+  {
+    //convierto los segundos ingresados a milis
+    unsigned long int miliSeg;
+    miliSeg=millis()+tiempoPatrones[K]*1000;
+    //prender los leds
+    while(miliSeg>=millis())
+    {
+      for(int i=7;i>=0;i--)
+      {
+        led(i, numerosfilas[K]);
+      }
+    }
+    apagarMatriz();
+    delay(230);
+  }
+
 }  
 
 //-----------------------------------------------------------
@@ -373,8 +403,3 @@ void coutpulso()
 }
 
 //-----------------------------------------------------------
-
-//librería abecedario
-void A()
-{
-}
