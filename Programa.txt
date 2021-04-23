@@ -259,7 +259,7 @@ void publik()
 
 
   //arreglo donde se almacenará el tiempo de cada patrón
-  unsigned long tiempoPatrones[cant_pat];
+  unsigned long *tiempoPatrones=new unsigned long[cant_pat];
   //matriz donde almacenaré el patron
   int numerosfilas[cant_pat][8][8];
 
@@ -319,7 +319,7 @@ void publik()
     apagarMatriz();
     delay(230);
   }
-
+  delete[] tiempoPatrones;
 }  
 
 //-----------------------------------------------------------
