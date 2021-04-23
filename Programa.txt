@@ -1,4 +1,19 @@
-﻿//FUNCIONES:
+﻿/*
+RESUMEN:
+Este programa permite verificar, imprimir una sola imagen, e impirmir una 
+serie de patrones en una matriz 8x8 de leds controlada por dos 74HC595.
+Para ejecutar el programa navegue por el menú. Si desea ingresar una patrón, 
+debe ingresar grupos de 8 dígitos, compuestos únicamente de 1 y 0.
+Ejemplo:
+-Su entrada podría ser: 11110000
+Si desea ingresar un tiempo de visualización su entrada deberá ser un entero.
+Ejemplo:
+-Su entrada podría ser: 5
+Revise el manual para mayor información.
+Nota: verifique que el dato ingresado se 
+muestre en pantalla antes de ingresar el siguiente dato. 
+*/
+//FUNCIONES:
 
 //activaciones por flanco de subida
 void pulsoColumna(); //flanco al shift register clock del integrado derecho
@@ -7,10 +22,11 @@ void coutpulso();    //flanco al output register clock de ambos integrados
 
 //VERIFICACIÓN DE TODOS LOS LEDS
 void verificacion();
+
 //otras
 void flancoMatriz(int);//recibe el tiempo que se mostrará la verificacion
-	void apagarMatriz();
-	void encenderMatriz();
+void apagarMatriz();
+void encenderMatriz();
 
 //MOSTRAR IMAGEN EN LA MATRIZ
 void imagen();
@@ -130,18 +146,103 @@ void loop()
 //----------------------------------------------------------------
 
 //FUNCIONES:
-void imagen()
+
+//activaciones por flanco de subida (SRCLK)
+void pulsoColumna()
+{
+  digitalWrite(columnaEtapa1, LOW);
+  digitalWrite(columnaEtapa1, HIGH);
+  digitalWrite(columnaEtapa1, LOW);
+}
+
+void pulsoFila()
+{
+  digitalWrite(filaEtapa1, LOW);
+  digitalWrite(filaEtapa1, HIGH);
+  digitalWrite(filaEtapa1, LOW);
+}
+
+//pulso al output de ambos integrados (RCLK)
+void coutpulso()
+{
+  digitalWrite(Etapa2, LOW);
+  digitalWrite(Etapa2, HIGH);
+  digitalWrite(Etapa2, LOW);
+
+}
+
+//-----------------------------------------------------------
+
+void verificacion()
 {
   Serial.println("Ingrese los segundos que desea ver la matriz encendida: ");
   while(1)
   {
     if(Serial.available())
     {
-      unsigned long tiempo;
-      tiempo=Serial.parseInt();
+      int tiempo;
+      tiempo=Serial.parseInt();//Se recibe el tiempo por medio del monitor serial
       Serial.println(tiempo);
       delay(1000);
-      imagenImpresion(tiempo);
+      flancoMatriz(tiempo);//Se enciende la matriz
+      break;
+    }
+  }
+}
+
+void flancoMatriz(int tiempo)
+{
+  apagarMatriz();
+  delay(50);
+  encenderMatriz();
+  delay(tiempo*1000);//El tiempo se recibe en segundos y se transforma en milisegundos
+  apagarMatriz();
+  delay(50);
+}
+
+void apagarMatriz()
+{
+  for(int i=1;i<=8;i++)
+  {
+	digitalWrite(SER, 0);//La salida de los 8 pines (ánodos de los led)del integrado derecho será 0
+    pulsoColumna();
+
+    digitalWrite(SER, 1);//La salida de los 8 pines (cátodos de los led) del integrado izquierdo será 1
+    pulsoFila();
+  }
+  coutpulso();
+}
+
+void encenderMatriz()
+{
+  for(int i=1;i<=8;i++)
+  {
+	digitalWrite(SER, 1);//La salida de los 8 pines (ánodos de los led) del integrado derecho será 1
+    pulsoColumna();
+    digitalWrite(SER, 0);//La salida de los 8 pines (cátodos de los led) del integrado izquierdo será 0
+    pulsoFila();
+  }
+  coutpulso();
+}
+  
+//-----------------------------------------------------------
+
+void imagen()
+{
+  Serial.println("Ingrese los segundos que desea ver la matriz encendida: ");
+  
+  /*el while en conjunto con un if que contiene un break, me garantiza
+  una espera para que el usuario ingrese el número*/
+  
+  while(1)
+  {
+    if(Serial.available())
+    {
+      unsigned long tiempo;
+      tiempo=Serial.parseInt();//Se recibe el tiempo por medio del monitor serial
+      Serial.println(tiempo);
+      delay(1000);
+      imagenImpresion(tiempo);//Se guarda matriz con el patrón 8x8 y se imprime
       break;
     }
   }
@@ -152,17 +253,17 @@ void imagen()
 void imagenImpresion(unsigned long tiempo)
 {
   Serial.println("Ingrese el patron de 8x8, linea por linea: ");
-  //matriz donde almacenaré el patron
+  //matriz donde almacenará el patrón
   int numerosfilas[8][8];
   
-  //se ingresan los 8 bits de cada fila
+  //se ingresan los 8 dígitos de cada fila
   for(int i=0;i<8;i++)
   {
-  	long int num;
+  	long int num;//numero entero de 8 digitos
   	int numeros[8];
-  	digitosfila(num, numeros);
+  	digitosfila(num, numeros);//Se llena el arreglo numeros con los dígitos de num
     
-    /*cada arreglo se ingresa en otro arreglo donde se almacenará la matriz.
+    /*Se almacena en la matriz 8x8 cada arreglo
     A la vez se muestra al usuario su entrada*/
     for(int j=0;j<8;j++)
     {
@@ -177,12 +278,17 @@ void imagenImpresion(unsigned long tiempo)
   
   //prender los leds
   unsigned long int miliSeg;
+  
+  /*Se almacena en una variable (miliSeg) el tiempo pasado en milisegundos 
+  desde el inicio de la ejecucion (millis) se le suma el tiempo ingresado*/
+  
   miliSeg=millis()+tiempo*1000;
   while(miliSeg>=millis())
   {
   	for(int i=7;i>=0;i--)
   	{
-    	led(i, numerosfilas);
+    	led(i, numerosfilas); /*Como parámetros de led se utilizan el arreglo 8x8 y la fila que
+      							se desea encender*/
   	}
   }
   
@@ -193,23 +299,20 @@ void imagenImpresion(unsigned long tiempo)
 //toma cada digito de un long int y lo ingresa a un int array
 void digitosfila(long int num, int numeros[])
 {
-  //Serial.println("ingrese 8 numeros: "); PA QUITAR
   
-  /*el while en conjunto con un if que contiene un break, me garantiza
-  una espera para que el usuario ingrese el número*/
   while(1)
   {
     if(Serial.available())
     {
       do{
-      //long int num;
+      
       num=Serial.parseInt();
       }while(num>11111111);
-      //int numeros[8];
+      
       for(int i=7;i>=0;i--)
       {
-        numeros[i]=(num%10);
-        num=(num/10);
+        numeros[i]=(num%10);// almacena el último dígito del número ingresado en la posición i del arreglo
+        num=(num/10);//elimina el dígito previamente almacenado
       }
       
       break;
@@ -221,20 +324,23 @@ void digitosfila(long int num, int numeros[])
 
 //-----------------------------------------------------------
 
+//Se recibe el número de fila y el arreglo con los 8 digitos de esta.
 void led(int f, int numerosfilas[][8])
 {
 
 
   for(int i=0;i<=7;i++)
-  {
-    digitalWrite(SER,numerosfilas[f][i]);
+  { 
+    digitalWrite(SER,numerosfilas[f][i]); /*Se manda el digito (uno o cero) en la posición 
+    							i del arreglo numerosfilas a los pines del integrado derecho*/
+    										
     pulsoColumna();
   }
-  digitalWrite(SER, 0);
-  for(int j=7;j>=f;j--)
+  digitalWrite(SER, 0); //Tierra
+  for(int j=7;j>=f;j--)//Se lleva tierra a la fila f.
   {
     pulsoFila();
-    digitalWrite(SER, 1);
+    digitalWrite(SER, 1); //Para las filas diferentes a f se utiliza el valor de 1 (diferente a tierra)
   }
   coutpulso();
   delay(1);
@@ -245,7 +351,7 @@ void led(int f, int numerosfilas[][8])
 void publik()
 {
   Serial.println("Ingrese la cantidad de patrones que desea mostrar: ");
-  int cant_pat;
+  int cant_pat; //Cantidad patrones
   while(1)
   {
     if(Serial.available())
@@ -259,20 +365,21 @@ void publik()
 
 
   //arreglo donde se almacenará el tiempo de cada patrón
+  //Se hace uso de la memoria dinámica pues no se conoce el tamaño del arreglo
   unsigned long *tiempoPatrones=new unsigned long[cant_pat];
-  //matriz donde almacenaré el patron
-  int numerosfilas[cant_pat][8][8];
+  //matriz de tres dimensiones donde se almacenarán los patrones.
+  int numerosfilas[cant_pat][8][8]; 
 
 
-  for(int K=0;K<cant_pat;K++){// se ingresa matriz 8x8 para cada patron
-	Serial.print("Ingrese el tiempo de visualizacion del patron ");
+  for(int K=0;K<cant_pat;K++){// se ingresa matriz 8x8 y el tiempo de visualización para cada patrón
+	Serial.print("Ingrese el tiempo de visualizacion del patron "); 
     Serial.print(K+1);
     Serial.println(": ");
     while(1)
     {
       if(Serial.available())
       {
-        tiempoPatrones[K]=Serial.parseInt();
+        tiempoPatrones[K]=Serial.parseInt(); //Se almacena el tiempo de cada patrón
         Serial.println(tiempoPatrones[K]);
         delay(1000);
         break;
@@ -281,17 +388,19 @@ void publik()
     Serial.print("Ingrese el patron numero ");
     Serial.print(K+1);
     Serial.println(" de 8x8, linea por linea : \n");
+    
     for(int i=0;i<8;i++)//se ingresan los 8 bits de cada fila
     {
-      long int num;
-      int numeros[8];
-
+      long int num; //número entero de ocho dígitos
+      int numeros[8]; //Se llena el arreglo numeros con los dígitos de num
+      
+      /*Se almacena en la matriz 8x8 cada arreglo a la vez se muestra 
+      al usuario su entrada*/
       digitosfila(num, numeros);
-      //cout<<endl;
       for(int j=0;j<8;j++)
       {
 
-        numerosfilas[K][i][j]=numeros[j]; //ingresar 1 o 0 en la posicion j de la fila i en el patron k
+        numerosfilas[K][i][j]=numeros[j]; //ingresar 1 o 0 en la posición j de la fila i en el patrón k.
         Serial.print(numerosfilas[K][i][j]);
         Serial.print(" "); 
 
@@ -308,12 +417,14 @@ void publik()
     //convierto los segundos ingresados a milis
     unsigned long int miliSeg;
     miliSeg=millis()+tiempoPatrones[K]*1000;
-    //prender los leds
+    
+    //Para encender los leds.
     while(miliSeg>=millis())
     {
       for(int i=7;i>=0;i--)
       {
-        led(i, numerosfilas[K]);
+        led(i, numerosfilas[K]);/*Como parámetros de led se utilizan el arreglo 8x8 en la 
+        						posición k y la fila que se desea encender*/
       }
     }
     apagarMatriz();
@@ -321,85 +432,5 @@ void publik()
   }
   delete[] tiempoPatrones;
 }  
-
-//-----------------------------------------------------------
-
-void verificacion()
-{
-  Serial.println("Ingrese los segundos que desea ver la matriz encendida: ");
-  while(1)
-  {
-    if(Serial.available())
-    {
-      int tiempo;
-      tiempo=Serial.parseInt();
-      Serial.println(tiempo);
-      delay(1000);
-      flancoMatriz(tiempo);
-      break;
-    }
-  }
-}
-
-void flancoMatriz(int tiempo)
-{
-  apagarMatriz();
-  delay(50);
-  encenderMatriz();
-  delay(tiempo*1000);
-  apagarMatriz();
-  delay(50);
-}
-
-void apagarMatriz()
-{
-  for(int i=1;i<=8;i++)
-  {
-	digitalWrite(SER, 0);
-    pulsoColumna();
-
-    digitalWrite(SER, 1);
-    pulsoFila();
-  }
-  coutpulso();
-}
-
-void encenderMatriz()
-{
-  for(int i=1;i<=8;i++)
-  {
-	digitalWrite(SER, 1);
-    pulsoColumna();
-    digitalWrite(SER, 0);
-    pulsoFila();
-  }
-  coutpulso();
-}
-  
-//-----------------------------------------------------------
-
-//activaciones por flanco de subida
-void pulsoColumna()
-{
-  digitalWrite(columnaEtapa1, LOW);
-  digitalWrite(columnaEtapa1, HIGH);
-  digitalWrite(columnaEtapa1, LOW);
-}
-
-void pulsoFila()
-{
-  digitalWrite(filaEtapa1, LOW);
-  digitalWrite(filaEtapa1, HIGH);
-  digitalWrite(filaEtapa1, LOW);
-}
-
-//pulso al output de ambos integrados
-void coutpulso()
-{
-  digitalWrite(Etapa2, LOW);
-  digitalWrite(Etapa2, HIGH);
-  digitalWrite(Etapa2, LOW);
-
-}
 
 //-----------------------------------------------------------
