@@ -43,7 +43,7 @@ textheight=23cm
         Despartamento de Ingeniería Electrónica y Telecomunicaciones\\
         Universidad de Antioquia\\
         Medellín\\
-        Marzo de 2021
+        Abril de 2021
             
     \end{center}
 \end{titlepage}
@@ -58,8 +58,6 @@ En este problema, haciendo uso de tinkercad, se pide realizar la simulación de 
 \subsection{Consideraciones iniciales}
 Se debe tener en cuenta, según las restricciones, que se podrán usar máximo siete pines digitales del Arduino, se usarán dos circuitos integrados, cada uno de estos necesita tres pines digitales, uno de ellos controla las ocho filas y el otro las ocho columnas en el sistema compuesto por 64 LEDs. El pin sobrante, llamado Shift Register Clear, podrá ser utilizado como reset de la matriz de LEDs.
 
-
-\subsection{Incluir código en el documento}
 \section{Tareas para el desarrollo del problema} \label{imagenes}
 \begin{enumerate}
   \item Comprender el funcionamiento del único circuito integrado que se puede utilizar para la solución de este problema, el 74HC595. (\ref{fig:Funcionamiento74HC595}),(\ref{fig:setup})
@@ -102,11 +100,19 @@ Se debe tener en cuenta, según las restricciones, que se podrán usar máximo s
   \item Hacer el manual de usuario en donde se tratará de explicar a detalle cómo funciona el sistema.
 \end{enumerate}
 
-
+\newpage
 \section{Algoritmo implementado} \label{imagenes}
-(Hacer el mapa mental)
+
+\begin{figure}[h]
+\includegraphics[scale=0.5]{ALGORIRMO1.png}
+\centering
+\caption{Conexión al arduino de dos circuitos integrados 74HC595}
+\label{fig:algoritmo}
+\end{figure}
+
 \section{Problemas durante el desarrollo del desafío}
 \begin{itemize}
+
 \item Al inicio de la implementación del código nos enfocamos en la creación de las funciones sin tener en cuenta la interacción que debía tener el usuario con el programa por medio de un menú, el usuario debía tener la capacidad de decidir ciertos aspectos relacionados con la visualización de los patrones en la matriz de LEDs, tales como el tiempo de visualización de cada patrón. Esto ocasionó la inevitable reestructuración de varias funciones para lograr la necesaria interacción del usuario.
 \item Otro de los problemas presentados fue el querer implementar el concepto de la persistencia retiniana y la multiplexación tomando led por led, entonces se usaban las posiciones de una fila y se pedía encender el led de una de esas posiciones, el programa tomaba el uno y lo guardaba en la posición deseada y las demás posiciones eran rellenadas con ceros, al momento de querer enviar otro uno a otra posición de la misma fila ocurría que el primer uno enviado no se eliminaba sino que, teniendo en cuenta el funcionamiento de integrado 74HC595, se corría a una nueva posición en esa misma fila en donde probablemente no hiría un uno sino un cero.
 \end{itemize}
@@ -134,7 +140,8 @@ Lunes19: en horas de la mañana se desarrolla una función la cual permite encen
 \caption{Montaje mejorado del circuito.}
 \label{fig:montaje2}
 \end{figure}
- 
+
+\newpage
 Martes 20: se crea un menú, y se modifican las funciones verificacion(), e imagen(),  de modo que su integración sea exitosa. Además, se modifican ambas funciones para recibir por parte del usuario el tiempo que desea que estén encendidos los leds, objetivo que se cumplió con la función verificacion(), pero de momento no con imagen(). Además se descubre que al igual como ocurrió con el pin output register clock, es posible integrar en un mismo pin el input (SER) de ambos integrados, y considerando que ya se desarrolló desde el inicio una función para apagar la matriz, se decide en definitiva eliminar el uso del pin digital encargado del clear de los integrados, dándonos como resultado, una matriz de leds controlada con  dos integrados y únicamente 4 pines digitales.
 
  \begin{figure}[h]
@@ -254,15 +261,4 @@ Al finalizar el ingreso de los patrones, el programa empezará a mostrar en los 
 \end{figure}
 
 \end{enumerate}
-
-
-\section{Inclusión de imágenes} \label{imagenes}
-
-En la Figura (\ref{fig:montaje1}), se presenta el primer montaje del circuito. 
-
-Las secciones (\ref{intro}), (\ref{contenido}) y (\ref{imagenes}) dependen del estilo del documento.
-
-\bibliographystyle{IEEEtran}
-\bibliography{references}
-
 \end{document}
